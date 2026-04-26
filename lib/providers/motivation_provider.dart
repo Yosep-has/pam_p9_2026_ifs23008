@@ -7,8 +7,6 @@ class MotivationProvider extends ChangeNotifier {
   int page = 1;
   bool isLoading = false;
   bool hasMore = true;
-
-  // 🔥 NEW
   bool isGenerating = false;
 
   Future<void> fetchMotivations() async {
@@ -18,7 +16,6 @@ class MotivationProvider extends ChangeNotifier {
     notifyListeners();
 
     final result = await MotivationService.getMotivations(page);
-
     List data = result["data"];
 
     if (data.isEmpty) {
@@ -40,15 +37,23 @@ class MotivationProvider extends ChangeNotifier {
 
     try {
       await MotivationService.generateMotivation(theme, total);
-
       motivations.clear();
       page = 1;
       hasMore = true;
-
       await fetchMotivations();
     } finally {
       isGenerating = false;
       notifyListeners();
     }
+  }
+
+  // ✅ reset() di luar generate(), sejajar dengan method lainnya
+  void reset() {
+    motivations.clear();
+    page = 1;
+    hasMore = true;
+    isLoading = false;
+    isGenerating = false;
+    notifyListeners();
   }
 }
